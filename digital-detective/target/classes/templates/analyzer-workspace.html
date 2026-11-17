@@ -33,7 +33,7 @@
       <div class="analyzer-content">
         <section class="analyzer-intro">
           <div><p class="analyzer-eyebrow">MULTI-FORMAT INTELLIGENCE</p><h1>Analysis Tool</h1><p>Turn suspicious content into a clearer picture.</p></div>
-          <button class="linked-case" id="linked-case" type="button"><img class="analyzer-icon" src="/analyzer-assets/folder-case.svg" alt=""><span><small>YOUR ACCOUNT</small><strong th:text="${userName}">Investigator</strong></span><img class="analyzer-icon" src="/analyzer-assets/chevron.svg" alt=""></button>
+          <button class="linked-case" id="linked-case" type="button"><img class="analyzer-icon" src="/analyzer-assets/folder-case.svg" alt=""><span><small th:text="${caseId != null ? 'LINKED CASE / #' + caseId : 'YOUR ACCOUNT'}">YOUR ACCOUNT</small><strong th:text="${caseTitle != null ? caseTitle : userName}" id="linked-case-title">Investigator</strong><small id="linked-case-status" th:if="${caseId != null}" th:text="${caseStatus != null ? caseStatus : 'Pending'}">Pending</small></span><img class="analyzer-icon" src="/analyzer-assets/chevron.svg" alt=""></button>
         </section>
 
         <section class="analyzer-columns">
@@ -227,21 +227,26 @@
         button.disabled = true; button.textContent = 'Analyzing...';
         setNotice(''); hasRun = true; progress = 10; renderProgress();
         try {
+          const activeCaseId = new URLSearchParams(window.location.search).get('caseId');
           const response = await fetch('/api/analyze', {
             method: 'POST', headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({type: mode, content: editor.value})
+            body: JSON.stringify({type: mode, content: editor.value, caseId: activeCaseId})
           });
           const data = await response.json();
           if (!response.ok || data.error) throw new Error(data.error || 'Analysis could not be completed.');
           progress = 100; renderProgress();
-          document.querySelector('#progress-caption').textContent = `Saved scan #${data.scanId} · ${data.riskLevel} risk · ${data.riskScore}/100`; 
+          if (activeCaseId) {
+            const caseStatus = document.querySelector('#linked-case-status');
+            if (caseStatus) caseStatus.textContent = 'Analysed';
+          }
+          document.querySelector('#progress-caption').textContent = `Saved scan #${data.scanId} · ${data.riskLevel} risk · ${data.riskScore}/100` + (activeCaseId ? ' · Case status: Analysed' : ''); 
           setNotice(data.result);
           notice.hidden = false;
           document.querySelector('#current-file-name').textContent = fileName;
         } catch (error) { hasRun = false; progress = 0; renderProgress(); setNotice(error.message); }
         finally { button.disabled = false; button.innerHTML = '<img class="analyzer-icon" src="/analyzer-assets/scan.svg" alt="">Run System Analysis'; }
       });
-      document.querySelector('#linked-case').addEventListener('click', () => { window.location.href = '/dashboard#cases'; });
+      document.querySelector('#linked-case').addEventListener('click', () => { window.location.href = '/cases'; });
       document.addEventListener('keydown', event => { if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); document.querySelector('#quick-search').focus(); } });
       renderProgress();
     })();
