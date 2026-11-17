@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Investigation - Digital Detective</title>
+</head>
+<body>
+
+    <h1>New Investigation</h1>
+
+    <p>
+        Case ID:
+        <strong th:text="${caseId}"></strong>
+    </p>
+
+    <h2>Select Analysis Type</h2>
+
+    <p>Choose the content you want to investigate.</p>
+
+    <a th:href="@{/email-analysis(caseId=${caseId})}">
+        <button type="button">Email Analysis</button>
+    </a>
+
+    <a th:href="@{/url-analysis(caseId=${caseId})}">
+        <button type="button">URL Scanner</button>
+    </a>
+
+    <a th:href="@{/message-analysis(caseId=${caseId})}">
+        <button type="button">Message Analysis</button>
+    </a>
+
+    <br><br>
+
+    <a href="/cases">Back to Cases</a>
+
+</body>
+</html>

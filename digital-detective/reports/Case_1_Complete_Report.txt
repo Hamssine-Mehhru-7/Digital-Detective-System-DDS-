@@ -1,0 +1,13 @@
+DIGITAL DETECTIVE INVESTIGATION REPORT
+=======================================
+
+Case ID: 1
+Title: Suspicious Internship Email
+Description: Investigating a suspicious internship announcement.
+Status: Open
+
+SAVED EVIDENCE
+--------------
+ANALYSIS RESULTS
+----------------
+No analysis results found for this type.
